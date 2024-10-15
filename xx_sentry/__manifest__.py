@@ -15,6 +15,11 @@
     "license": "AGPL-3",
     "application": False,
     "installable": True,
+    "assets": {
+        "web.assets_backend": [
+            "xx_sentry/static/src/js/sentry_init.js",
+        ],
+    },
     "external_dependencies": {
         "python": [
             "sentry_sdk<=1.9.0",
@@ -22,6 +27,9 @@
     },
     "depends": [
         "base",
+    ],
+    "data": [
+        "data/config_parameter.xml",
     ],
     "post_load": "post_load",
 }
