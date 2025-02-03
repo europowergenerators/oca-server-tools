@@ -96,7 +96,7 @@ def initialize_sentry(config):
         def get_config_or_param(key, default=None):
             try:
                 return config.get(
-                    f"sentry_{key}", get_param(env, f"xx_sentry.sentry_{key}", default)
+                    f"sentry_{key}", get_param(env, f"sentry.sentry_{key}", default)
                 )
             except KeyError:
                 _logger.warning(

@@ -1,11 +1,11 @@
 <odoo>
 
     <record forcecreate="True" id="config_sentry_enabled" model="ir.config_parameter">
-        <field name="key">xx_sentry.sentry_enabled</field>
+        <field name="key">sentry.sentry_enabled</field>
         <field name="value">false</field>
     </record>
     <record forcecreate="True" id="config_sentry_dsn" model="ir.config_parameter">
-        <field name="key">xx_sentry.sentry_dsn</field>
+        <field name="key">sentry.sentry_dsn</field>
         <field name="value">false</field>
     </record>
     <record
@@ -13,7 +13,7 @@
         id="config_sentry_logging_level"
         model="ir.config_parameter"
     >
-        <field name="key">xx_sentry.sentry_logging_level</field>
+        <field name="key">sentry.sentry_logging_level</field>
         <field name="value">warn</field>
     </record>
     <record
@@ -21,7 +21,7 @@
         id="config_sentry_exclude_loggers"
         model="ir.config_parameter"
     >
-        <field name="key">xx_sentry.sentry_exclude_loggers</field>
+        <field name="key">sentry.sentry_exclude_loggers</field>
         <field name="value">werkzeug</field>
     </record>
     <record
@@ -29,7 +29,7 @@
         id="config_sentry_ignore_exceptions"
         model="ir.config_parameter"
     >
-        <field name="key">xx_sentry.sentry_ignore_exceptions</field>
+        <field name="key">sentry.sentry_ignore_exceptions</field>
         <field
             name="value"
         >odoo.exceptions.AccessDenied,odoo.exceptions.AccessError,odoo.exceptions.MissingError,odoo.exceptions.RedirectWarning,odoo.exceptions.UserError,odoo.exceptions.ValidationError,odoo.exceptions.Warning,odoo.exceptions.except_orm</field>
@@ -39,7 +39,7 @@
         id="config_sentry_traces_sample_rate"
         model="ir.config_parameter"
     >
-        <field name="key">xx_sentry.sentry_traces_sample_rate</field>
+        <field name="key">sentry.sentry_traces_sample_rate</field>
         <field name="value">1</field>
     </record>
     <record
@@ -47,7 +47,7 @@
         id="config_sentry_include_context"
         model="ir.config_parameter"
     >
-        <field name="key">xx_sentry.sentry_include_context</field>
+        <field name="key">sentry.sentry_include_context</field>
         <field name="value">true</field>
     </record>
     <record
@@ -55,11 +55,11 @@
         id="config_sentry_environment"
         model="ir.config_parameter"
     >
-        <field name="key">xx_sentry.sentry_environment</field>
+        <field name="key">sentry.sentry_environment</field>
         <field name="value">test</field>
     </record>
     <record forcecreate="True" id="config_sentry_odoo_dir" model="ir.config_parameter">
-        <field name="key">xx_sentry.sentry_odoo_dir</field>
+        <field name="key">sentry.sentry_odoo_dir</field>
         <field
             name="value"
         >/opt/odoo/buildouts/europowergenerators17/parts/odoo/odoo</field>

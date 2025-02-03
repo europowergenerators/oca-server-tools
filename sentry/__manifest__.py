@@ -17,7 +17,7 @@
     "installable": True,
     "assets": {
         "web.assets_backend": [
-            "xx_sentry/static/src/js/sentry_init.js",
+            "sentry/static/src/js/sentry_init.js",
         ],
     },
     "external_dependencies": {
