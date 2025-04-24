@@ -22,7 +22,7 @@
     },
     "external_dependencies": {
         "python": [
-            "sentry_sdk<=1.9.0",
+            "sentry_sdk",
         ]
     },
     "depends": [

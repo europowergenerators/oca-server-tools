@@ -4,6 +4,7 @@
 import logging
 import warnings
 from collections import abc
+from urllib.parse import urlparse
 
 import odoo.http
 from odoo import SUPERUSER_ID, api
@@ -54,7 +55,7 @@ def before_send(event, hint):
         if qualified_name in const.DEFAULT_IGNORED_EXCEPTIONS:
             return None
 
-    if event.setdefault("tags", {})["include_context"]:
+    if event.setdefault("tags", {}).get("include_context", False):
         cxtest = get_extra_context(odoo.http.request)
         info_request = ["tags", "user", "extra", "request"]
 
@@ -65,6 +66,20 @@ def before_send(event, hint):
     raven_processor = SanitizeOdooCookiesProcessor()
     raven_processor.process(event)
 
+    return event
+
+
+def before_send_transaction(event, hint):
+    event = before_send(event, hint)
+
+    path = event["transaction"]
+    try:
+        url = urlparse(event["request"]["url"])
+        path = url.path
+    except Exception as e:
+        _logger.warning("Error parsing url: %s", e)
+
+    event["transaction"] = path
     return event
 
 
@@ -142,6 +157,7 @@ def initialize_sentry(config):
         del options["ignore_exceptions"]
 
         options["before_send"] = before_send
+        options["before_send_transaction"] = before_send_transaction
 
         options["integrations"] = [
             options["logging_level"],
@@ -150,6 +166,16 @@ def initialize_sentry(config):
         # Remove logging_level, since in sentry_sdk is include in 'integrations'
         del options["logging_level"]
 
+        debug = config.get("sentry_debug", False)
+        if debug:
+            options["debug"] = True
+            _logger.debug("Sentry debug mode enabled")
+            _logger.debug("Initializing Sentry with options: %s", options)
+
+        # options["send_default_pii"] = True
+        # options["traces_sample_rate"] = 1
+        # options["profile_session_sample_rate"] = 1
+        # options["profile_lifecycle"] = "trace"
         client = sentry_sdk.init(**options)
 
         sentry_sdk.set_tag(
@@ -164,10 +190,25 @@ def initialize_sentry(config):
         if server:
             server.app = SentryWsgiMiddleware(server.app)
 
-        # Patch the wsgi server in case of further registration
-        odoo.http.Application = SentryWsgiMiddleware(odoo.http.Application)
+        # https://github.com/hnavarro-kernet/sentry/commit/46fca9dd296f30a090413c1479ca6fd6670e8273
+        # XXX: I hate this hack,
+        # but I'm not sure how to fix SentryWsgiMiddleware not having
+        # methods like session_store that the
+        # odoo.http.root has and Odoo calls for them
+        # in random places.
+        class OdooIntegration(SentryWsgiMiddleware):
+            def __init__(self, app, *args, **kwargs):
+                super().__init__(app, *args, **kwargs)
 
-        with sentry_sdk.push_scope() as scope:
+            def __getattr__(self, name):
+                if hasattr(super(), name):
+                    return getattr(super(), name)
+                return getattr(self.app, name)
+
+        # Patch the wsgi server in case of further registration
+        odoo.http.root = OdooIntegration(odoo.http.root)
+
+        with sentry_sdk.new_scope() as scope:
             scope.set_extra("debug", False)
             sentry_sdk.capture_message("Starting Odoo Server", "info")
 
